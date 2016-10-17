@@ -23,9 +23,18 @@ typedef struct array_head {
 int main() {
     int temp = 4;
     Array2D array = AllocateArray2D(3, 3);
-    set(array, &temp, 1, 1);
+    set(array, &temp, 1, 2);
     int* result = (int*) get(array, 1, 2);
-    printf("%i\n", *result);
+    printf("%d\n", *result);
+    int temp2 = 7;
+    set(array, &temp2, 2, 0);
+    swap(array, 1, 2, 2, 0);
+    result = (int*) get(array, 1, 2);
+    int* result2 = (int*) get(array, 2, 0);
+    printf("%d\n", *result);
+    printf("%d\n", *result2);
+
+
 }
 
 Array2DPayload_t get(Array2D array, int x, int y) {
@@ -33,7 +42,10 @@ Array2DPayload_t get(Array2D array, int x, int y) {
         // Parameters out of bounds, or null array.
         return (Array2DPayload_t) NULL;
     }
-    return (Array2DPayload_t) array->head + y * array->columns * PtrSize + x * PtrSize;
+    long* returnVal = array->head + y * (array->columns + 1) * PtrSize + x * PtrSize;
+    //printf("returned pointer: %ld\n", (long) returnVal);
+    return (Array2DPayload_t)(*returnVal);
+    //return (Array2DPayload_t) (array->head + y * array->columns + x);
 
 }
 
@@ -63,10 +75,18 @@ int set(Array2D array, Array2DPayload_t value, int x, int y) {
         return 2;
     }
     
-    long* index = (long*) array->head + y * array->columns * PtrSize + x * PtrSize;
+    //long* index = (long*) array->head + y * array->columns * PtrSize + x * PtrSize;
+    long* index = (long*) array->head + y * (array->columns + 1) + x; //cast to ptr so no * ptr
+
+    //printf("columns: %d\n", array->columns);
+    //printf("rows: %d\n", array->rows);
+    //printf("PtrSize: %d\n", PtrSize);
+    //printf("value passed in: %d\n",*((int*)value));
+    //printf("address of value: %ld\n", (long)value);
     *index = (long) value;
+    //printf("%ld\n", (long)(*index));
     
-    printf("%ld\n%ld\n", (long)array->head, (long)index);
+    //printf("array head: %ld\nindex pointer: %ld\n", (long)array->head, (long)index);
     
     
     return 0;
